@@ -6,7 +6,7 @@ import { copy } from '../content/copy';
 import type { Feedback, GameResult, Option, Question, Screen, Topic } from '../types';
 
 type Speech = {
-  say: (text: string) => void;
+  say: (text: string, onEnded?: () => void) => void;
   cancel: () => void;
 };
 
@@ -22,7 +22,7 @@ const FEEDBACK_OF: Record<AnswerResult, Exclude<Feedback, null>> = {
 /**
  * Game state and timers of a round. The browser only presents the game: the questions, the right answer, the
  * score, the streak and the final result all come from `gameApi` (the server decides, the UI displays).
- * The countdown is a visual aid; when it reaches 0 the hook reports a timeout to the API.
+ * The countdown starts when the question audio ends (the server is told) and is a visual aid; when it reaches 0 the hook reports a timeout to the API.
  */
 export default function useQuizGame({ topics, say, cancel }: Speech & { topics: Topic[] }) {
   const [screen, setScreen] = useState<Screen>('splash');
@@ -39,6 +39,8 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
   const [result, setResult] = useState<GameResult | null>(null);
   const [starting, setStarting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  /** The countdown only runs once the question audio has ended. */
+  const [timerRunning, setTimerRunning] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const [error, setError] = useState<GameError | null>(null);
   const locked = useRef(false);
@@ -49,6 +51,16 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
   const topic = topics.find(item => item.id === selectedTopicId) ?? topics[0];
 
   useEffect(() => { const timeout = setTimeout(() => setScreen('home'), SPLASH_MS); return () => clearTimeout(timeout); }, []);
+
+  /** Reads the question aloud; the countdown starts when the audio ends. Ignored if the round changed meanwhile. */
+  function presentQuestion(sessionId: string, questionId: string, text: string, current: number) {
+    setTimerRunning(false);
+    say(text, () => {
+      if (current !== round.current) return;
+      setTimerRunning(true);
+      gameApi.startTimer(sessionId, questionId).catch(() => {});
+    });
+  }
 
   function selectTopic(item: Topic) {
     setSelectedTopicId(item.id);
@@ -70,7 +82,7 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
       setSeconds(created.first.timeLimitSeconds);
       setFeedback(null); setSelectedOptionId(null); setCorrectOptionId(null); setNextStep(null); setResult(null);
       locked.current = false; setSubmitting(false); setTransitioning(false); setScreen('quiz');
-      say(copy.speech.start(created.first.question.text));
+      presentQuestion(created.id, created.first.question.id, copy.speech.start(created.first.question.text), current);
     } catch {
       if (current === round.current) setError({ message: copy.errors.start, retry: start });
     } finally {
@@ -94,6 +106,7 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
       setCorrectOptionId(outcome.correctOptionId);
       setNextStep(outcome.next);
       setFeedback(FEEDBACK_OF[outcome.result]);
+      setTimerRunning(false);
       say(outcome.result === 'CORRECT' ? copy.speech.correct : copy.speech.wrong(outcome.correctText));
     } catch {
       if (current === round.current) {
@@ -109,19 +122,19 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
   function goHome() {
     round.current += 1;
     locked.current = true;
-    setScreen('home'); setFeedback(null); setTransitioning(false); setSubmitting(false); setStarting(false); setError(null);
+    setScreen('home'); setFeedback(null); setTimerRunning(false); setTransitioning(false); setSubmitting(false); setStarting(false); setError(null);
     cancel();
   }
 
   // Countdown: one tick per second while a question is open and no request is in flight.
   useEffect(() => {
-    if (screen !== 'quiz' || feedback || transitioning || submitting) return;
+    if (screen !== 'quiz' || !timerRunning || feedback || transitioning || submitting) return;
     const interval = setInterval(() => setSeconds(value => Math.max(0, value - 1)), 1000);
     return () => clearInterval(interval);
-  }, [screen, index, feedback, transitioning, submitting]);
+  }, [screen, index, timerRunning, feedback, transitioning, submitting]);
 
   // Time is up: report it as a timeout.
-  useEffect(() => { if (screen === 'quiz' && seconds === 0 && !feedback && !transitioning && !submitting) answer(null); }, [seconds, screen, feedback, transitioning, submitting]);
+  useEffect(() => { if (screen === 'quiz' && timerRunning && seconds === 0 && !feedback && !transitioning && !submitting) answer(null); }, [seconds, screen, timerRunning, feedback, transitioning, submitting]);
 
   // After the feedback pause: fetch the final result after the last question, otherwise fade the question out.
   useEffect(() => {
@@ -146,9 +159,10 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
     const timeout = setTimeout(() => {
       setIndex(nextStep.number - 1); setQuestion(nextStep.question); setTimeLimit(nextStep.timeLimitSeconds); setSeconds(nextStep.timeLimitSeconds);
       setSelectedOptionId(null); setCorrectOptionId(null); setFeedback(null); setNextStep(null); locked.current = false; setTransitioning(false);
+      if (session) presentQuestion(session.id, nextStep.question.id, nextStep.question.text, round.current);
     }, TRANSITION_MS);
     return () => clearTimeout(timeout);
-  }, [transitioning, nextStep]);
+  }, [transitioning, nextStep, session]);
 
   return {
     screen, topic, question, index, total: session?.totalQuestions ?? 0, timeLimit, seconds, feedback,

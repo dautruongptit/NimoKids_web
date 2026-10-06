@@ -10,6 +10,8 @@ import type { AnswerOutcome, GameResult, GameSession, Topic } from './types';
 export interface GameApi {
   getTopics(): Promise<Topic[]>;
   createSession(topicId: string): Promise<GameSession>;
+  /** Tells the server the question audio has ended and the countdown has started (the server still enforces the deadline). */
+  startTimer(sessionId: string, questionId: string): Promise<void>;
   submitAnswer(sessionId: string, questionId: string, optionId: string): Promise<AnswerOutcome>;
   submitTimeout(sessionId: string, questionId: string): Promise<AnswerOutcome>;
   getResult(sessionId: string): Promise<GameResult>;

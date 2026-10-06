@@ -118,6 +118,11 @@ export const mockGameApi: GameApi = {
     return { id: session.id, totalQuestions: session.questions.length, first: stepOf(session, 0) };
   },
 
+  async startTimer(sessionId, questionId) {
+    await wait();
+    openQuestion(sessionId, questionId);
+  },
+
   async submitAnswer(sessionId, questionId, optionId) {
     await wait();
     failIf('answer');
