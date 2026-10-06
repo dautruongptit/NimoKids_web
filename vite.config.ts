@@ -32,8 +32,12 @@ react(),
     },
     server: {
       host: process.env.FIGMA_DEV_SERVER_HOST || '0.0.0.0',
-      port: parseInt(process.env.PORT || '8443'),
+      port: parseInt(process.env.PORT || '8500'),
       strictPort: true,
+      // Same origin as in Docker (nginx proxies /api): the browser calls /api/... and Vite forwards it to the backend.
+      proxy: {
+        '/api': { target: process.env.VITE_API_PROXY || 'http://localhost:8510', changeOrigin: true },
+      },
       watch: {
         ignored: [
           '**/.figma/**',
@@ -42,7 +46,7 @@ react(),
     },
     preview: {
       host: process.env.FIGMA_DEV_SERVER_HOST || '0.0.0.0',
-      port: parseInt(process.env.PORT || '8443'),
+      port: parseInt(process.env.PORT || '8500'),
     },
   }
 })

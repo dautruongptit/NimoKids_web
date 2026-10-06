@@ -27,6 +27,7 @@ This is the canonical project structure. Start with task-relevant files below. O
 - `package.json` - Project dependencies and the Vite build, development, preview, and formatting scripts
 - `vite.config.ts` - Vite configuration with React, Tailwind CSS v4, and Figma Make plugins plus the `@` alias for `src`
 - `.mise.toml` - Toolchain versions for Node.js and pnpm
+- `Dockerfile`, `nginx/default.conf.template`, `.dockerignore` - Production image (pnpm build, then nginx). Port standard: NimoKids is project 85, so the web is `8500` (dev server default and nginx `PORT`) and the API is `8510`; nginx and the Vite dev server both proxy `/api` to the backend, so use relative URLs (`/api/v1/...`) in the HTTP client. Compose file: `09-DevOps/Docker/nimokids/`, documentation: `04-Documentation/deployment.md`
 
 ## Dependencies
 
