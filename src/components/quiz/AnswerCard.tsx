@@ -16,11 +16,7 @@ type AnswerCardProps = {
 
 export default function AnswerCard({ option, color, disabled, correct, wrong, dimmed, onClick }: AnswerCardProps) {
   const className = ['answer-card', color, correct && 'correct', wrong && 'wrong', dimmed && 'unselected'].filter(Boolean).join(' ');
-  const { visual } = option;
   return <button disabled={disabled} onClick={onClick} className={className}>
-    {visual.imageUrl
-      ? <img className="answer-emoji" src={visual.imageUrl} alt="" />
-      : <span className="answer-emoji">{visual.emoji}</span>}
     <span>{option.text}</span>
     <span className="answer-marker">{correct ? '✓' : wrong ? '×' : ''}</span>
   </button>;

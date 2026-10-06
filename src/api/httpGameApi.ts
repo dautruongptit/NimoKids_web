@@ -68,7 +68,7 @@ const post = <T>(path: string, body?: unknown) => request<T>('POST', path, body 
 // --------------------------------------------------------------------------
 
 type BackendOption = { id: string; text: string; image: string | null; voice: string | null };
-type BackendQuestion = { id: string; questionText: string; options: BackendOption[] };
+type BackendQuestion = { id: string; questionText: string; questionImage: string | null; options: BackendOption[] };
 type BackendQuestionStep = { questionNumber: number; timeLimitSeconds: number; question: BackendQuestion };
 type BackendSession = {
   sessionId: string;
@@ -135,11 +135,11 @@ function mapQuestion(q: BackendQuestion) {
   return {
     id: q.id,
     text: q.questionText,
-    image: null as null,          // no images yet; options carry emoji via visual.name
+    image: q.questionImage ? { name: q.questionText, emoji: q.questionImage } : null,
     options: q.options.map(o => ({
       id: o.id,
       text: o.text,
-      visual: { name: o.text },   // emoji fallback is looked up by name in the UI
+      visual: { name: o.text },
     })),
   };
 }
