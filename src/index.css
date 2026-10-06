@@ -769,6 +769,48 @@ svg {
   min-width: min(324px, 100%);
 }
 
+.primary:disabled {
+  opacity: 0.6;
+  box-shadow: 0 6px 0 var(--purple-dark);
+}
+
+/* Loading / error states of the data coming from the API */
+.topic-status {
+  padding: clamp(24px, 6vh, 56px) 0;
+  text-align: center;
+  font-weight: 700;
+  color: var(--ink-faint);
+}
+
+.error-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 14px;
+  max-width: 520px;
+  margin: 14px auto 0;
+  padding: 10px 16px;
+  border: 1.5px solid #ebc2cd;
+  border-radius: 16px;
+  background: #fdecf0;
+  font-size: 0.875rem;
+  font-weight: 800;
+  text-align: center;
+  color: #9a5570;
+}
+
+.error-retry {
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 0 16px;
+  border: 2px solid #e5b9c6;
+  border-radius: 14px;
+  background: #fff;
+  font-weight: 800;
+  color: #9a5570;
+}
+
 .play-icon {
   font-size: 24px;
 }
@@ -1006,6 +1048,20 @@ footer > span:first-child > span {
   z-index: 1;
   width: min(267px, 62%);
   filter: drop-shadow(0 6px 2px #bb946318);
+}
+
+/* Used once the backend provides real pictures instead of emoji */
+.question-photo {
+  position: relative;
+  z-index: 1;
+  max-width: min(300px, 80%);
+  max-height: 100%;
+  object-fit: contain;
+}
+
+img.answer-emoji {
+  height: 1.3em;
+  object-fit: contain;
 }
 
 .large-emoji {

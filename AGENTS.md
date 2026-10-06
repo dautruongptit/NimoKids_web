@@ -15,7 +15,14 @@ This is the canonical project structure. Start with task-relevant files below. O
 
 - `src/main.tsx` - React entrypoint; imports `src/index.css` and mounts `src/App.tsx` into the `#root` element
 - `src/App.tsx` - Primary application component and the usual starting point for UI work
-- `src/index.css` - Global CSS entrypoint and Tailwind CSS v4 import
+- `src/index.css` - Global CSS entrypoint and Tailwind CSS v4 import. Hand-written, fluid styles (no fixed layout sizes); keep text at 12px or more and tap targets at 44px or more
+- `src/screens/` - One component per screen (`SplashScreen`, `HomeScreen`, `QuizScreen`, `ResultScreen`); `App.tsx` only picks which one to show
+- `src/components/` - Reusable UI, grouped by area: `common` (Bear, Button, SoundButton, Scenery), `layout` (Header, Footer), `home`, `quiz`, `result`
+- `src/api/` - The only place game data comes from. `GameApi` is the interface, `mockGameApi` the in-browser fake server (reads `src/mocks/*.json`), `index.ts` picks the implementation. To use the Java backend, add an HTTP `GameApi` and export it from `index.ts`; read the CONTRACT GAPS note in `api/types.ts` first
+- `src/mocks/` - Mock data as JSON (`topics.json`, `questionBank.json`). Dev switches: `VITE_MOCK_LATENCY_MS`, `VITE_MOCK_FAIL` (topics | session | answer | result)
+- `src/hooks/` - `useQuizGame` (game state and timers, talks to `gameApi`; the UI never decides correctness, score or timeout), `useTopics` (loads topics, loading/error status) and `useSpeech` (text-to-speech and mute)
+- `src/content/copy.ts` - Wording that depends on game state (feedback, bear messages, result headline, spoken lines, error messages)
+- `src/types.ts`, `src/constants.ts` - Shared UI types and game constants
 - `index.html` - Vite HTML shell containing the `#root` element and loading `src/main.tsx`
 - `package.json` - Project dependencies and the Vite build, development, preview, and formatting scripts
 - `vite.config.ts` - Vite configuration with React, Tailwind CSS v4, and Figma Make plugins plus the `@` alias for `src`

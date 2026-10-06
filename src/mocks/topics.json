@@ -1,0 +1,10 @@
+[
+  { "id": "topic-animals", "code": "ANIMALS", "name": "Animals", "emoji": "🐶", "color": "peach" },
+  { "id": "topic-food", "code": "FOOD", "name": "Food", "emoji": "🍎", "color": "pink" },
+  { "id": "topic-vehicles", "code": "VEHICLES", "name": "Vehicles", "emoji": "🚙", "color": "blue" },
+  { "id": "topic-colors", "code": "COLORS", "name": "Colors", "emoji": "🌈", "color": "lavender" },
+  { "id": "topic-shapes", "code": "SHAPES", "name": "Shapes", "emoji": "🔷", "color": "lavender" },
+  { "id": "topic-ocean", "code": "OCEAN", "name": "Ocean", "emoji": "🐠", "color": "blue" },
+  { "id": "topic-nature", "code": "NATURE", "name": "Nature", "emoji": "🌳", "color": "mint" },
+  { "id": "topic-toys", "code": "TOYS", "name": "Toys", "emoji": "🧸", "color": "yellow" }
+]
