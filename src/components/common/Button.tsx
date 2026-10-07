@@ -1,10 +1,9 @@
 import type { ButtonHTMLAttributes } from 'react';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'blue-btn' | 'lavender-btn';
 };
 
-/** Big rounded call-to-action. The look comes from the .primary / .secondary classes in index.css. */
 export default function Button({ variant = 'primary', className, children, ...rest }: ButtonProps) {
-  return <button className={[variant, className].filter(Boolean).join(' ')} {...rest}>{children}</button>;
+  return <button className={['squishy-btn', variant, className].filter(Boolean).join(' ')} {...rest}>{children}</button>;
 }

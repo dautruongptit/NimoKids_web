@@ -3,7 +3,7 @@ import { gameApi } from '../api';
 import type { AnswerResult, GameSession, QuestionStep } from '../api';
 import { FEEDBACK_MS, SPLASH_MS, TRANSITION_MS } from '../constants';
 import { copy } from '../content/copy';
-import type { Feedback, GameResult, Option, Question, Screen, Topic } from '../types';
+import type { AgeGroup, Feedback, GameResult, Option, Question, Screen, Topic } from '../types';
 
 type Speech = {
   say: (text: string, onEnded?: () => void) => void;
@@ -27,6 +27,7 @@ const FEEDBACK_OF: Record<AnswerResult, Exclude<Feedback, null>> = {
 export default function useQuizGame({ topics, say, cancel }: Speech & { topics: Topic[] }) {
   const [screen, setScreen] = useState<Screen>('splash');
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
+  const [selectedAge, setSelectedAge] = useState<AgeGroup | null>(null);
   const [session, setSession] = useState<GameSession | null>(null);
   const [question, setQuestion] = useState<Question | null>(null);
   const [index, setIndex] = useState(0);
@@ -67,8 +68,18 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
     say(item.name);
   }
 
+  function selectAge(age: AgeGroup) {
+    setSelectedAge(age);
+    setScreen('home');
+  }
+
+  function goAge() {
+    setScreen('age');
+  }
+
   async function start() {
     if (!topic || starting) return;
+    if (!selectedAge) { goAge(); return; }
     const current = ++round.current;
     setStarting(true);
     setError(null);
@@ -126,6 +137,10 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
     cancel();
   }
 
+  function goHomeFromAge() {
+    setScreen('home');
+  }
+
   // Countdown: one tick per second while a question is open and no request is in flight.
   useEffect(() => {
     if (screen !== 'quiz' || !timerRunning || feedback || transitioning || submitting) return;
@@ -165,8 +180,8 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
   }, [transitioning, nextStep, session]);
 
   return {
-    screen, topic, question, index, total: session?.totalQuestions ?? 0, timeLimit, seconds, feedback,
+    screen, topic, selectedAge, question, index, total: session?.totalQuestions ?? 0, timeLimit, seconds, feedback,
     selectedOptionId, correctOptionId, result, starting, submitting, transitioning, error,
-    selectTopic, start, answer, goHome,
+    selectTopic, selectAge, start, answer, goHome, goHomeFromAge,
   };
 }

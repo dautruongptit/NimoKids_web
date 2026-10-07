@@ -5,30 +5,48 @@ import WelcomeHero from '../components/home/WelcomeHero';
 import Footer from '../components/layout/Footer';
 import type { GameError } from '../hooks/useQuizGame';
 import type { TopicsStatus } from '../hooks/useTopics';
-import type { Topic } from '../types';
+import type { AgeGroup, Topic } from '../types';
 
 type HomeScreenProps = {
   topicsStatus: TopicsStatus;
   topics: Topic[];
   selectedTopic: Topic | undefined;
-  /** True while the new game is being created on the server. */
+  selectedAge: AgeGroup | null;
   starting: boolean;
-  /** Failure to start the game, if any. */
   error: GameError | null;
   onSelectTopic: (topic: Topic) => void;
   onReloadTopics: () => void;
   onStart: () => void;
+  onSpeak?: (text: string) => void;
 };
 
-export default function HomeScreen({ topicsStatus, topics, selectedTopic, starting, error, onSelectTopic, onReloadTopics, onStart }: HomeScreenProps) {
+export default function HomeScreen({ topicsStatus, topics, selectedTopic, selectedAge, starting, error, onSelectTopic, onReloadTopics, onStart, onSpeak }: HomeScreenProps) {
   return <main className="home-content">
     <WelcomeHero />
-    <TopicSection status={topicsStatus} topics={topics} selected={selectedTopic} onSelect={onSelectTopic} onRetry={onReloadTopics} />
-    <div className="play-area">
-      <Button className="play-button" onClick={onStart} disabled={!selectedTopic || starting} aria-busy={starting || undefined}><span className="play-icon">▶</span> Let's play! <span className="button-sparkle">✦</span></Button>
-      {error && <ErrorNotice message={error.message} onRetry={error.retry} />}
-      <p>5 little questions. So much fun!</p>
-    </div>
+    <TopicSection
+      status={topicsStatus}
+      topics={topics}
+      selected={selectedTopic}
+      onSelect={onSelectTopic}
+      onRetry={onReloadTopics}
+      onSpeak={onSpeak}
+    />
+    {error && <div className="home-error"><ErrorNotice message={error.message} onRetry={error.retry} /></div>}
     <Footer variant="home" />
+
+    {selectedTopic && <div className="play-dock">
+      <div className="dock-inner">
+        <div className="selected-topic">
+          <span>{selectedTopic.emoji}</span>
+          <div>
+            <small>Selected:</small>
+            <strong>{selectedTopic.name}</strong>
+          </div>
+        </div>
+        <Button onClick={onStart} disabled={starting} aria-busy={starting || undefined}>
+          {selectedAge ? "Let's Play! 🚀" : 'Choose Age 🎈'}
+        </Button>
+      </div>
+    </div>}
   </main>;
 }
