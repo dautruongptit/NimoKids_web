@@ -37,7 +37,7 @@ export default function AgeScreen({ onSelectAge, onBack }: AgeScreenProps) {
     <div className="age-grid">
       {AGE_OPTIONS.map(opt => <button
         key={opt.age}
-        className="age-card"
+        className={`age-card${opt.age === '4-5' ? ' older' : ''}`}
         onClick={() => onSelectAge(opt.age)}
       >
         <div className="age-card-top">
