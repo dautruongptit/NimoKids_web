@@ -22,7 +22,17 @@ type HomeScreenProps = {
 
 export default function HomeScreen({ topicsStatus, topics, selectedTopic, selectedAge, starting, error, onSelectTopic, onReloadTopics, onStart, onSpeak }: HomeScreenProps) {
   return <main className="home-content">
-    <WelcomeHero />
+    <WelcomeHero onPlay={onStart} />
+
+    <div className="info-banner">
+      <span className="info-icon">🌟</span>
+      <div>
+        <strong>No pressure, just exploration!</strong>
+        <p>No accounts. No complicated steps. Just a little learning and a lot of fun.</p>
+      </div>
+      <span className="info-stars">☆ ☆ ☆</span>
+    </div>
+
     <TopicSection
       status={topicsStatus}
       topics={topics}

@@ -98,6 +98,7 @@ type BackendTopic = {
   id: string;
   code: string;
   name: string;
+  description: string | null;
   parentId: string | null;
 };
 
@@ -119,12 +120,18 @@ const TOPIC_META: Record<string, { emoji: string; color: string }> = {
   HOME:        { emoji: '🏠', color: 'peach' },
   NATURE:      { emoji: '🌳', color: 'mint' },
   SEA_ANIMALS: { emoji: '🐠', color: 'blue' },
-  FARM_ANIMALS:{ emoji: '🐄', color: 'mint' },
+  FARM_ANIMALS:      { emoji: '🐄', color: 'mint' },
+  VEGETABLES:        { emoji: '🥕', color: 'mint' },
+  BODY_PARTS:        { emoji: '🧍', color: 'pink' },
+  WEATHER:           { emoji: '⛅', color: 'blue' },
+  FAMILY:            { emoji: '👨‍👩‍👧', color: 'peach' },
+  MUSIC_INSTRUMENTS: { emoji: '🎵', color: 'lavender' },
+  DAILY_ACTIVITIES:  { emoji: '📅', color: 'yellow' },
 };
 
 function mapTopic(t: BackendTopic): Topic {
   const meta = TOPIC_META[t.code] ?? { emoji: '📚', color: 'peach' };
-  return { id: t.id, code: t.code, name: t.name, parentId: t.parentId, ...meta };
+  return { id: t.id, code: t.code, name: t.name, description: t.description ?? '', parentId: t.parentId, ...meta };
 }
 
 // --------------------------------------------------------------------------

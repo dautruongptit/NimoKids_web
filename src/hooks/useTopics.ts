@@ -4,7 +4,7 @@ import type { Topic } from '../types';
 
 export type TopicsStatus = 'loading' | 'ready' | 'error';
 
-const MIX_TOPIC: Topic = { id: 'MIX', code: 'MIX', name: 'All Topics', emoji: '🌈', color: 'lavender' };
+const MIX_TOPIC: Topic = { id: 'MIX', code: 'MIX', name: 'All Topics', description: 'Little surprises from all our friendly worlds!', emoji: '🌈', color: 'lavender' };
 
 /** Loads the topic list from the API once, and again on demand (the "Try again" button). */
 export default function useTopics() {

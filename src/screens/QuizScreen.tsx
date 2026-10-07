@@ -33,7 +33,7 @@ export default function QuizScreen({ question, index, total, seconds, timeLimit,
   return <main className="quiz-content">
     <QuizTopBar index={index} total={total} onHome={onHome} />
     <section className={`question-card ${transitioning ? 'transitioning' : ''}`}>
-      <QuestionHeading prompt={question.text} seconds={seconds} timeLimit={timeLimit} feedback={feedback} onSpeak={() => onSpeak(question.text)} />
+      <QuestionHeading prompt={question.text} index={index} total={total} seconds={seconds} timeLimit={timeLimit} feedback={feedback} onSpeak={() => onSpeak(question.text)} />
       {question.image && <QuestionImage key={index} image={question.image} />}
       <AnswerPrompt feedback={feedback} />
       <AnswerGrid question={question} index={index} feedback={feedback} selectedOptionId={selectedOptionId} correctOptionId={correctOptionId} locked={transitioning || submitting} onAnswer={onAnswer} />

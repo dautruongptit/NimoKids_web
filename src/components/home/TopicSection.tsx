@@ -31,9 +31,9 @@ export default function TopicSection({ status, topics, selected, onSelect, onRet
       </button>}
       <div>
         <h1 id="topic-title">Choose a Topic! 🎯</h1>
-        <p>What do you want to learn today? Tap a card and let's explore!</p>
+        <p>What do you want to learn today? Tap a card and let&#39;s explore!</p>
       </div>
-      <span className="preschool-pill">🎓 Preschool Safe •<br />100% Fun</span>
+      <span className="preschool-pill">🎓 Preschool Safe &bull;<br />100% Fun</span>
     </div>
 
     {status === 'loading' && <p className="topic-status" role="status">{copy.loadingTopics}</p>}

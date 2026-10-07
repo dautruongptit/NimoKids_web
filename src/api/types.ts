@@ -10,7 +10,7 @@
 /** Something to draw: an emoji for now, an image URL once the backend provides pictures. */
 export type Visual = { name: string; emoji?: string; imageUrl?: string };
 
-export type Topic = { id: string; code: string; name: string; emoji: string; color: string; parentId?: string | null };
+export type Topic = { id: string; code: string; name: string; description: string; emoji: string; color: string; parentId?: string | null };
 
 export type Option = { id: string; text: string; visual: Visual };
 
