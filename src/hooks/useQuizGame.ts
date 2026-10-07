@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { gameApi } from '../api';
-import type { AnswerResult, GameSession, QuestionStep } from '../api';
+import type { AnswerResult, BackendAgeGroup, GameSession, QuestionStep } from '../api';
 import { FEEDBACK_MS, SPLASH_MS, TRANSITION_MS } from '../constants';
 import { copy } from '../content/copy';
 import type { AgeGroup, Feedback, GameResult, Option, Question, Screen, Topic } from '../types';
+
+const AGE_MAP: Record<AgeGroup, BackendAgeGroup> = { '1-3': 'AGE_1_3', '4-5': 'AGE_4_5' };
 
 type Speech = {
   say: (text: string, onEnded?: () => void) => void;
@@ -78,13 +80,17 @@ export default function useQuizGame({ topics, say, cancel }: Speech & { topics: 
   }
 
   async function start() {
-    if (!topic || starting) return;
+    if (starting) return;
     if (!selectedAge) { goAge(); return; }
     const current = ++round.current;
     setStarting(true);
     setError(null);
     try {
-      const created = await gameApi.createSession(topic.id);
+      const isMix = !topic || topic.id === 'MIX';
+      const created = await gameApi.createSession({
+        topicId: isMix ? null : topic.id,
+        ageGroup: AGE_MAP[selectedAge],
+      });
       if (current !== round.current) return;
       setSession(created);
       setQuestion(created.first.question);

@@ -1,16 +1,21 @@
 import type { AnswerOutcome, GameResult, GameSession, Topic } from './types';
 
+/** Backend age-group enum values. */
+export type BackendAgeGroup = 'AGE_1_3' | 'AGE_4_5';
+
+export type CreateSessionParams = {
+  /** null = MIX mode (all topics). */
+  topicId: string | null;
+  ageGroup: BackendAgeGroup;
+};
+
 /**
- * Everything the game needs from "the server". Two implementations are planned:
- * - mockGameApi: in-memory, reads src/mocks/*.json (used today)
- * - an HTTP client for the Java backend (/api/v1/...), sending the X-Anonymous-Id header
- *
+ * Everything the game needs from "the server".
  * The server decides correctness, score, streak and timeout. The UI must never compute them.
  */
 export interface GameApi {
   getTopics(): Promise<Topic[]>;
-  createSession(topicId: string): Promise<GameSession>;
-  /** Tells the server the question audio has ended and the countdown has started (the server still enforces the deadline). */
+  createSession(params: CreateSessionParams): Promise<GameSession>;
   startTimer(sessionId: string, questionId: string): Promise<void>;
   submitAnswer(sessionId: string, questionId: string, optionId: string): Promise<AnswerOutcome>;
   submitTimeout(sessionId: string, questionId: string): Promise<AnswerOutcome>;

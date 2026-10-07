@@ -4,6 +4,8 @@ import type { Topic } from '../types';
 
 export type TopicsStatus = 'loading' | 'ready' | 'error';
 
+const MIX_TOPIC: Topic = { id: 'MIX', code: 'MIX', name: 'All Topics', emoji: '🌈', color: 'lavender' };
+
 /** Loads the topic list from the API once, and again on demand (the "Try again" button). */
 export default function useTopics() {
   const [status, setStatus] = useState<TopicsStatus>('loading');
@@ -13,7 +15,7 @@ export default function useTopics() {
     let cancelled = false;
     setStatus('loading');
     gameApi.getTopics()
-      .then(result => { if (!cancelled) { setTopics(result); setStatus('ready'); } })
+      .then(result => { if (!cancelled) { setTopics([MIX_TOPIC, ...result]); setStatus('ready'); } })
       .catch(() => { if (!cancelled) setStatus('error'); });
     return () => { cancelled = true; };
   }, []);

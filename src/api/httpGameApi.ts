@@ -3,7 +3,7 @@
  * Maps backend DTOs → frontend types. Sends X-Anonymous-Id header on every request.
  * Anonymous player UUID is generated once per browser and persisted in localStorage.
  */
-import { ApiError, type GameApi } from './GameApi';
+import { ApiError, type CreateSessionParams, type GameApi } from './GameApi';
 import type { AnswerOutcome, GameResult, GameSession, Topic } from './types';
 
 // --------------------------------------------------------------------------
@@ -188,9 +188,13 @@ export const httpGameApi: GameApi = {
     return topics.map(mapTopic);
   },
 
-  async createSession(topicId): Promise<GameSession> {
+  async createSession({ topicId, ageGroup }: CreateSessionParams): Promise<GameSession> {
     const gameModeId = await getGuessModeId();
-    const data = await post<BackendSession>('/game-sessions', { topicId, gameModeId });
+    const data = await post<BackendSession>('/game-sessions', {
+      topicId,
+      gameModeId,
+      ageGroup,
+    });
     return {
       id: data.sessionId,
       totalQuestions: data.totalQuestions,
